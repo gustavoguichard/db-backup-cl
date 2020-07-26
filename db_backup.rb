@@ -3,13 +3,16 @@
 
 require 'optparse'
 require 'English'
+require 'open3'
 
-def run_command(command, status = 1)
-  system(command)
-  return if $CHILD_STATUS.exitstatus.zero?
+def run_command(command, statuscode = 1)
+  puts "Running '#{command}'"
+  _stdout_str, stderr_str, status = Open3.capture3(command)
+  return if status.exitstatus.zero?
 
-  puts "There was a problem running '#{command}'"
-  exit status
+  $stderr.puts "There was a problem running '#{command}'"
+  $stderr.puts stderr_str
+  exit statuscode
 end
 
 options = {}
