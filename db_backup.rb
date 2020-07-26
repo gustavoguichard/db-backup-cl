@@ -42,6 +42,10 @@ Usage: #{executable_name} [options] database_name
     options[:iteration] = true
   end
 
+  opts.on('--[no-]force', 'Overwrite existing backups') do |force|
+    options[:force] = force
+  end
+
   opts.on('--no-gzip', 'Do not compress the backup file') do
     options[:gzip] = false
   end
@@ -67,5 +71,14 @@ Signal.trap('SIGINT') do
   exit 1
 end
 
-run_command("mysqldump #{auth}#{database} > #{backup_file}")
+run_command("mysqldump #{auth}#{database} > #{backup_file}") do
+  if File.exist? backup_file
+    if options[:force]
+      warn "Overwriting #{backup_file}"
+    else
+      warn "error: #{backup_file} already exists, use --force to overwrite"
+      exit 1
+    end
+  end
+end
 run_command("gzip #{backup_file}", 2) if options[:gzip]
