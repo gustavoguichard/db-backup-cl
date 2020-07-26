@@ -52,5 +52,10 @@ auth = ''
 auth += "-u#{options[:user]} " if options[:user]
 auth += "-p#{options[:password]} " if options[:password]
 
+Signal.trap('SIGINT') do
+  FileUtils.rm backup_file
+  exit 1
+end
+
 run_command "mysqldump #{auth}#{database} > #{backup_file}"
 run_command "gzip #{backup_file}", 2
