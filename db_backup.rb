@@ -2,6 +2,15 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'English'
+
+def run_command(command, status = 1)
+  system(command)
+  return if $CHILD_STATUS.exitstatus.zero?
+
+  puts "There was a problem running '#{command}'"
+  exit status
+end
 
 options = {}
 option_parser = OptionParser.new do |opts|
@@ -28,17 +37,17 @@ end
 option_parser.parse! # removes the options and keeps other ARGV
 
 if ARGV.empty?
-  puts 'error: you must supply a database_name'
-  puts
+  puts "error: you must supply a database_name\n\n"
   puts option_parser.help
-else
-  database = ARGV.shift
-  # end_of_iter = ARGV.shift
-  # if end_of_iter.nil?
-  backup_file = database + Time.now.strftime('%Y%m%d')
-  # else
-  #   backup_file = database + end_of_iter
-  # end
-  `mysqldump -u#{options[:user]} -p#{options[:password]} #{database} > #{backup_file}.sql`
-  `gzip #{backup_file}.sql`
+  exit 3
 end
+
+database = ARGV.shift
+backup_file = "#{database + Time.now.strftime('%Y%m%d')}.sql"
+
+auth = ''
+auth += "-u#{options[:user]} " if options[:user]
+auth += "-p#{options[:password]} " if options[:password]
+
+run_command "mysqldump #{auth}#{database} > #{backup_file}"
+run_command "gzip #{backup_file}", 2
