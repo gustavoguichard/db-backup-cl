@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require 'yaml'
 
 class BackupConfig
   attr_reader :options
 
   def initialize
-    @options = { gzip: true }
+    read_default_options
     option_parser.parse!
     pick_database
   end
@@ -19,6 +20,33 @@ class BackupConfig
     end
 
     @options[:database] = ARGV.shift
+  end
+
+  private
+
+  def read_default_options
+    @options ||= {
+      gzip: true,
+      force: false,
+      'end-of-iteration': false,
+      username: nil,
+      password: nil
+    }
+    File.exist?(config_file) ? merge_default_config : create_default_config
+  end
+
+  def config_file
+    File.join(ENV['HOME'], '.db_backup.rc.yaml')
+  end
+
+  def merge_default_config
+    config = YAML.load_file(config_file)
+    @options.merge!(config)
+  end
+
+  def create_default_config
+    File.open(config_file, 'w') { |file| YAML.dump(@options, file) }
+    warn "Initialized configuration file in #{config_file}"
   end
 
   def option_parser
