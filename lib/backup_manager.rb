@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'open3'
-require './backup_config.rb'
+require 'backup_config'
 
 class BackupManager
   attr_reader :options

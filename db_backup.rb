@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require './backup_manager.rb'
-require './backup_config.rb'
+$LOAD_PATH.unshift(File.expand_path 'lib')
+
+require 'backup_manager'
+require 'backup_config'
 
 backup_config = BackupConfig.new
 
