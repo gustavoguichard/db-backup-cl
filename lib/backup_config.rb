@@ -53,7 +53,7 @@ class BackupConfig
     @option_parser ||= OptionParser.new do |opts|
       opts.banner = opts_banner
 
-      opts.on('-u USER', '--username', /^.+\..+$/, 'Database username, in first.last format') do |user|
+      opts.on('-u USER', '--username', 'Database username') do |user|
         @options[:user] = user
       end
 
