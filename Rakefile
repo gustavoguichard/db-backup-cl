@@ -1,4 +1,6 @@
 require 'rdoc/task'
+require 'rubygems'
+require 'rubygems/package_task'
 require 'cucumber'
 require 'cucumber/rake/task'
 
@@ -13,4 +15,8 @@ Cucumber::Rake::Task.new(:features) do |t|
   opts += " --tags #{ENV['TAGS']}" if ENV['TAGS']
   t.cucumber_opts = opts
   t.fork = false
+end
+
+spec = eval(File.read('db_backup.gemspec'))
+Gem::PackageTask.new(spec) do |pkg|
 end
