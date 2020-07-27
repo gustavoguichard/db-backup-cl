@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift(File.expand_path '../lib', File.dirname(__FILE__))
+# $LOAD_PATH.unshift(File.expand_path '../lib', File.dirname(__FILE__))
 
-require 'backup_manager'
-require 'backup_config'
+require 'db_backup'
 
-backup_config = BackupConfig.new
+config = DbBackup::Config.new
 
-BackupManager.new(backup_config.options) do |backup_manager|
-  backup_manager.backup!
-  backup_manager.gzip!
+DbBackup::Manager.new(config.options) do |manager|
+  manager.backup!
+  manager.gzip!
 end
